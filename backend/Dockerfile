@@ -2,27 +2,24 @@ FROM python:3.10-slim
 
 ENV PYTHONUNBUFFERED=1
 
-# 1. Install FFmpeg for audio, and Git to pull the patched repository
-RUN apt-get update && apt-get install -y ffmpeg git && rm -rf /var/lib/apt/lists/*
+# 1. Install ONLY the basic FFmpeg runtime and wget. Zero C++ dev headers.
+RUN apt-get update && apt-get install -y ffmpeg wget && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY requirements.txt .
 
-# 2. Upgrade pip and build tools
+# 2. Update pip and core tools
 RUN pip install --upgrade pip setuptools wheel
 
 # 3. Install CPU-only PyTorch first
 RUN pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-# 4. THE NUKE: Delete 'audiocraft' from your requirements.txt dynamically
-RUN sed -i '/audiocraft/d' requirements.txt
+# 4. THE SILVER BULLET: Install the pre-compiled binary wheel for PyAV 11.0.0 directly from PyPI's servers.
+# This physically stops pip from downloading the tar.gz source and triggering the C++ compiler.
+RUN pip install https://files.pythonhosted.org/packages/15/dd/786db90e2d31215bb4b06b72a6b28cc42735160cb81c3c97eeb4c1cde8ba/av-11.0.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
 
-# 5. Install the rest of the normal requirements
+# 5. Copy requirements and install the rest. Pip will see 'av' is already installed and completely skip it.
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# 6. Install Meta's patched Audiocraft directly from GitHub. 
-# This bypasses the broken PyPI package and seamlessly uses pre-compiled PyAV wheels!
-RUN pip install --no-cache-dir git+https://github.com/facebookresearch/audiocraft.git
 
 COPY . /app
 
