@@ -1,24 +1,24 @@
 services:
-  backend_api:
+  composer_backend:
     build: ./backend
-    container_name: crate_backend
+    container_name: beat_backend
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8001:8001"
     volumes:
-      - ./shared_data:/app/shared_data
+      - ./shared_outputs:/app/shared_outputs
     deploy:
       resources:
         limits:
-          memory: 8G
+          memory: 10G # AI needs RAM
 
-  frontend_ui:
+  composer_frontend:
     build: ./frontend
-    container_name: crate_frontend
+    container_name: beat_frontend
     restart: unless-stopped
     ports:
-      - "8050:8050"
+      - "8060:8050" # Access UI at YOUR_IP:8060
     volumes:
-      - ./shared_data:/app/shared_data
+      - ./shared_outputs:/app/shared_outputs
     depends_on:
-      - backend_api
+      - composer_backend
