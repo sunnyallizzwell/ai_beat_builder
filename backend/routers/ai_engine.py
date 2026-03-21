@@ -2,8 +2,9 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from audiocraft.models import MusicGen
 from audiocraft.data.audio import audio_write
-import random
 import os
+import re
+import time
 
 router = APIRouter()
 OUTPUT_DIR = '/app/shared_outputs'
@@ -16,13 +17,24 @@ class AIRequest(BaseModel):
     prompt: str
     duration: int = 10
 
+def sanitize_filename(prompt: str) -> str:
+    # Keep only alphanumeric characters and spaces
+    clean = re.sub(r'[^a-zA-Z0-9 ]', '', prompt)
+    # Replace spaces with underscores and limit to 50 characters to prevent OS crashes
+    clean = clean.strip().replace(' ', '_')[:50]
+    if not clean:
+        clean = "ai_beat"
+    # Append a short timestamp so if you use the same prompt twice, it doesn't overwrite
+    return f"{clean}_{int(time.time())}"
+
 @router.post("/generate")
 def generate_ai_beat(req: AIRequest):
     try:
         model.set_generation_params(duration=req.duration)
         wav = model.generate([req.prompt], progress=False)
         
-        filename = f"ai_beat_{random.randint(1000,9999)}"
+        # Use the sanitized prompt for the filename
+        filename = sanitize_filename(req.prompt)
         filepath = os.path.join(OUTPUT_DIR, filename)
         
         audio_write(filepath, wav[0].cpu(), model.sample_rate, strategy="loudness")
