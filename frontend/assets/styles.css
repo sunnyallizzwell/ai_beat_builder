@@ -74,22 +74,29 @@ body {
     letter-spacing: 1px;
 }
 
+/* Custom Inputs - Forced High Contrast */
 input.custom-input {
     width: 100%;
-    background: #0f172a;
-    border: 1px solid #334155;
-    color: white;
+    background-color: #ffffff !important; /* Forces a white background */
+    color: #0f172a !important; /* Forces dark slate text */
+    border: 2px solid #334155 !important;
     padding: 14px;
     border-radius: 8px;
     box-sizing: border-box;
     font-size: 15px;
+    font-weight: 600 !important;
     transition: all 0.2s ease;
+}
+
+input.custom-input::placeholder {
+    color: #94a3b8 !important; /* Makes the placeholder text visible but muted */
+    font-weight: 400 !important;
 }
 
 input.custom-input:focus {
     outline: none;
-    border-color: #38bdf8;
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2) !important;
 }
 
 /* Beautiful Buttons */

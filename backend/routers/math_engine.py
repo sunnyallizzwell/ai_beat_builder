@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import pretty_midi
 import random
 import os
+import time
 
 router = APIRouter()
 OUTPUT_DIR = '/app/shared_outputs'
@@ -21,16 +22,18 @@ def generate_math_beat(req: MathRequest):
     step_duration = (60.0 / req.bpm) / 4
 
     for step in range(total_steps):
-        time = step * step_duration
-        if step % 4 == 0: # Four on the floor kick
-            drums.notes.append(pretty_midi.Note(100, KICK, time, time+0.1))
-        if step % 8 == 4: # Snare on 2 and 4
-            drums.notes.append(pretty_midi.Note(90, SNARE, time, time+0.1))
-        if random.random() > 0.3: # Random hi-hats
-            drums.notes.append(pretty_midi.Note(random.randint(60, 90), HIHAT_CLOSED, time, time+0.1))
+        time_pos = step * step_duration
+        if step % 4 == 0:
+            drums.notes.append(pretty_midi.Note(100, KICK, time_pos, time_pos+0.1))
+        if step % 8 == 4:
+            drums.notes.append(pretty_midi.Note(90, SNARE, time_pos, time_pos+0.1))
+        if random.random() > 0.3:
+            drums.notes.append(pretty_midi.Note(random.randint(60, 90), HIHAT_CLOSED, time_pos, time_pos+0.1))
 
     pm.instruments.append(drums)
-    filename = f"math_beat_{random.randint(1000,9999)}.mid"
+    
+    # Descriptive filename: e.g., Math_Beat_128BPM_4Bars_1708552.mid
+    filename = f"Math_Beat_{int(req.bpm)}BPM_{req.bars}Bars_{int(time.time())}.mid"
     pm.write(os.path.join(OUTPUT_DIR, filename))
     
     return {"status": "success", "file": filename}

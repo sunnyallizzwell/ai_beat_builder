@@ -6,19 +6,21 @@ services:
     ports:
       - "8001:8001"
     volumes:
-      - ./shared_outputs:/app/shared_outputs
+      # The left side is your server, the right side is the container
+      - /mnt/media/ai_beat_generator:/app/shared_outputs
     deploy:
       resources:
         limits:
-          memory: 10G # AI needs RAM
+          memory: 10G
 
   composer_frontend:
     build: ./frontend
     container_name: beat_frontend
     restart: unless-stopped
     ports:
-      - "8060:8050" # Access UI at YOUR_IP:8060
+      - "8060:8050"
     volumes:
-      - ./shared_outputs:/app/shared_outputs
+      # Make sure the frontend points to the exact same place!
+      - /mnt/media/ai_beat_generator:/app/shared_outputs
     depends_on:
       - composer_backend
