@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+playwright
+audiocraft
+pretty_midi
+scipy
+demucs
