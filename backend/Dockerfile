@@ -7,17 +7,19 @@ RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# 2. Update pip and core tools
 RUN pip install --upgrade pip setuptools wheel
 
-# 3. Install CPU-only PyTorch first
-RUN pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+# 2. Install the exact CPU PyTorch version that Audiocraft's backend demands
+RUN pip install torch==2.1.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cpu
 
-# 4. THE VERSION LOCK: 
-# - "numpy<2.0.0" stops the Numpy 2.0 C++ math crash.
-# - "transformers<4.41.0" stops HuggingFace from rejecting Audiocraft's PyTorch 2.1.0 requirement.
-# - --only-binary=av bypasses the PyAV compiler loop.
-RUN pip install --no-cache-dir "numpy<2.0.0" "transformers<4.41.0" fastapi uvicorn pretty_midi scipy audiocraft --only-binary=av
+# 3. THE QUARANTINE ZONE: 
+# Lock NumPy to the 1.x era, and lock Transformers to a version from late 2023.
+# This makes them perfectly compatible with PyTorch 2.1.0.
+RUN pip install "numpy<2.0.0" "transformers==4.35.2"
+
+# 4. Install Audiocraft and the web framework. 
+# Pip will see the quarantined packages and respect the locks.
+RUN pip install --no-cache-dir fastapi uvicorn pretty_midi scipy audiocraft --only-binary=av
 
 COPY . /app
 
