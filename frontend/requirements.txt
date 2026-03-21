@@ -1,0 +1,6 @@
+dash
+dash-iconify
+requests
+gunicorn
+Pillow
+mutagen
