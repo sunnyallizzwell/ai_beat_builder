@@ -1,21 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import database
-from routers import ripper
+from routers import math_engine, ai_engine
+import os
 
-app = FastAPI(title="Crate Digger Backend API")
+app = FastAPI(title="Beat Composer API")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-# Attach the ripper endpoints to the main API
-app.include_router(ripper.router, prefix="/api/ripper", tags=["Ripper"])
+os.makedirs('/app/shared_outputs', exist_ok=True)
+
+# Attach the generation engines
+app.include_router(math_engine.router, prefix="/api/math", tags=["Math Engine"])
+app.include_router(ai_engine.router, prefix="/api/ai", tags=["AI Engine"])
 
 @app.get("/")
-def health_check():
-    return {"status": "online", "message": "Crate Digger Backend is running."}
+def health():
+    return {"status": "Composer Backend Online"}

@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+    background-color: #0f172a; /* Deep Slate Background */
+    color: #f8fafc;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.studio-container {
+    max-width: 900px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.header h1 {
+    font-size: 36px;
+    margin: 0;
+    background: linear-gradient(90deg, #38bdf8, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+/* Glassmorphism Panels */
+.panel {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s;
+}
+
+.panel:hover {
+    transform: translateY(-2px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.panel-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-teal { color: #2dd4bf; }
+.text-purple { color: #c084fc; }
+
+/* Custom Inputs */
+.input-label {
+    display: block;
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+input.custom-input {
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: white;
+    padding: 14px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+input.custom-input:focus {
+    outline: none;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+/* Beautiful Buttons */
+button.btn-generate {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+button.btn-math {
+    background: linear-gradient(135deg, #0d9488, #0f766e);
+    color: white;
+    box-shadow: 0 4px 15px rgba(13, 148, 136, 0.4);
+}
+button.btn-math:hover { box-shadow: 0 6px 20px rgba(13, 148, 136, 0.6); transform: scale(1.01); }
+
+button.btn-ai {
+    background: linear-gradient(135deg, #9333ea, #7e22ce);
+    color: white;
+    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+}
+button.btn-ai:hover { box-shadow: 0 6px 20px rgba(147, 51, 234, 0.6); transform: scale(1.01); }
+
+/* Audio Player Styling */
+audio {
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.success-box {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px dashed #10b981;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.download-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 10px;
+}
+.download-link:hover { text-decoration: underline; }
