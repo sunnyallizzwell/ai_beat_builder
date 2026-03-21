@@ -89,7 +89,7 @@ input.custom-input {
 }
 
 input.custom-input::placeholder {
-    color: #94a3b8 !important; /* Makes the placeholder text visible but muted */
+    color: #0f172a !important; /* Makes the placeholder text visible but muted */
     font-weight: 400 !important;
 }
 
