@@ -16,62 +16,72 @@ server = app.server
 def download_file(filename):
     return send_from_directory(OUTPUT_DIR, filename, as_attachment=True)
 
-# Custom tab styles to match your dark theme
-TAB_STYLE = {'backgroundColor': '#1e293b', 'color': '#94a3b8', 'border': 'none', 'borderTop': '2px solid transparent', 'padding': '15px', 'fontWeight': 'bold', 'cursor': 'pointer'}
-TAB_SELECTED_STYLE = {'backgroundColor': '#0f172a', 'color': '#38bdf8', 'border': 'none', 'borderTop': '2px solid #38bdf8', 'padding': '15px', 'fontWeight': 'bold', 'cursor': 'default'}
+# Custom tab styles
+TAB_STYLE = {'backgroundColor': 'var(--tab-bg)', 'color': 'var(--text-muted)', 'border': 'none', 'borderBottom': '3px solid transparent', 'padding': '15px 25px', 'fontWeight': 'bold', 'cursor': 'pointer', 'transition': 'all 0.2s'}
+TAB_SELECTED_STYLE = {'backgroundColor': 'var(--bg-panel)', 'color': 'var(--text-main)', 'border': 'none', 'borderBottom': '3px solid var(--accent-ai)', 'padding': '15px 25px', 'fontWeight': 'bold', 'cursor': 'default'}
 
 app.layout = html.Div(className="studio-container", children=[
     
     html.Div(className="header", children=[
-        html.H1([DashIconify(icon="mdi:waveform", width=40, style={'verticalAlign': 'middle', 'marginRight': '10px'}), "AI Composer Studio"]),
-        html.P("Dual-Engine Beat Generation. Powered by Python & PyTorch.", style={'color': '#94a3b8'})
+        html.H1([DashIconify(icon="mdi:waveform", width=46, style={'verticalAlign': 'middle', 'marginRight': '12px', 'color': '#f8fafc'}), "AI Composer Studio"]),
+        html.P("Dual-Engine Beat Generation. Powered by Python & PyTorch.", style={'fontSize': '1.1rem'})
     ]),
 
-    dcc.Tabs(id="app-tabs", value='tab-studio', children=[
+    dcc.Tabs(id="app-tabs", value='tab-studio', style={'display': 'flex', 'justifyContent': 'center', 'borderBottom': '1px solid var(--border-color)'}, children=[
         
         # --- TAB 1: THE STUDIO ---
         dcc.Tab(label='🎛️ The Studio', value='tab-studio', style=TAB_STYLE, selected_style=TAB_SELECTED_STYLE, children=[
-            html.Div(style={'marginTop': '30px'}, children=[
+            
+            # THE NEW DESKTOP GRID CONTAINER
+            html.Div(className="engines-grid", children=[
+                
+                # PANEL 1: AI ENGINE
                 html.Div(className="panel", children=[
-                    html.H2([DashIconify(icon="mdi:brain", width=24), " Text-to-Music Neural Engine"], className="panel-title text-purple"),
-                    html.Div(style={'display': 'flex', 'gap': '20px', 'marginBottom': '20px'}, children=[
-                        html.Div(style={'flex': '3'}, children=[
+                    html.H2([DashIconify(icon="mdi:brain", width=28, style={'marginRight':'10px'}), "Text-to-Music Neural Engine"], className="panel-title text-purple"),
+                    
+                    html.Div(className="input-row", children=[
+                        html.Div(className="input-group wide", children=[
                             html.Label("Prompt (Describe the sound)", className="input-label"),
-                            dcc.Input(id="ai-prompt", type="text", className="custom-input", placeholder="e.g., 120 bpm lo-fi hip hop drum loop")
+                            dcc.Input(id="ai-prompt", type="text", placeholder="e.g., 128 BPM big room house drop, punchy kick...")
                         ]),
-                        html.Div(style={'flex': '1'}, children=[
+                        html.Div(className="input-group", children=[
                             html.Label("Duration (Secs)", className="input-label"),
-                            dcc.Input(id="ai-duration", type="number", className="custom-input", value=10, min=5, max=30)
+                            dcc.Input(id="ai-duration", type="number", value=10, min=5, max=30)
                         ])
                     ]),
-                    html.Button([DashIconify(icon="mdi:creation", width=20), " Synthesize Audio (.WAV)"], id="btn-ai", className="btn-generate btn-ai", n_clicks=0),
+                    
+                    html.Button([DashIconify(icon="mdi:creation", width=22), " Synthesize Audio (.WAV)"], id="btn-ai", className="btn-generate btn-ai", n_clicks=0),
                     dcc.Loading(type="circle", color="#a855f7", style={'marginTop': '40px'}, children=[html.Div(id="ai-output")])
                 ]),
-                html.Br(),
+
+                # PANEL 2: MATH ENGINE
                 html.Div(className="panel", children=[
-                    html.H2([DashIconify(icon="mdi:math-compass", width=24), " Algorithmic Grid Sequencer"], className="panel-title text-teal"),
-                    html.Div(style={'display': 'flex', 'gap': '20px', 'marginBottom': '20px'}, children=[
-                        html.Div(style={'flex': '1'}, children=[
+                    html.H2([DashIconify(icon="mdi:math-compass", width=28, style={'marginRight':'10px'}), "Algorithmic Grid Sequencer"], className="panel-title text-teal"),
+                    
+                    html.Div(className="input-row", children=[
+                        html.Div(className="input-group", children=[
                             html.Label("Target BPM", className="input-label"),
-                            dcc.Input(id="math-bpm", type="number", className="custom-input", value=128)
+                            dcc.Input(id="math-bpm", type="number", value=128)
                         ]),
-                        html.Div(style={'flex': '1'}, children=[
+                        html.Div(className="input-group", children=[
                             html.Label("Loop Length (Bars)", className="input-label"),
-                            dcc.Input(id="math-bars", type="number", className="custom-input", value=4)
+                            dcc.Input(id="math-bars", type="number", value=4)
                         ])
                     ]),
-                    html.Button([DashIconify(icon="mdi:calculator-variant", width=20), " Calculate Pattern (.MID)"], id="btn-math", className="btn-generate btn-math", n_clicks=0),
+                    
+                    html.Button([DashIconify(icon="mdi:calculator-variant", width=22), " Calculate Pattern (.MID)"], id="btn-math", className="btn-generate btn-math", n_clicks=0),
                     dcc.Loading(type="circle", color="#2dd4bf", style={'marginTop': '40px'}, children=[html.Div(id="math-output")])
                 ])
+                
             ])
         ]),
 
         # --- TAB 2: THE VAULT ---
         dcc.Tab(label='📁 The Vault', value='tab-vault', style=TAB_STYLE, selected_style=TAB_SELECTED_STYLE, children=[
-            html.Div(className="panel", style={'marginTop': '30px'}, children=[
-                html.Div(style={'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center', 'marginBottom': '20px'}, children=[
-                    html.H2([DashIconify(icon="mdi:folder-music", width=24), " Your Generated Files"], className="panel-title", style={'border': 'none', 'margin': '0', 'padding': '0'}),
-                    html.Button([DashIconify(icon="mdi:refresh", width=18), " Refresh"], id="btn-refresh-vault", style={'backgroundColor': '#334155', 'color': 'white', 'border': 'none', 'padding': '8px 16px', 'borderRadius': '6px', 'cursor': 'pointer'})
+            html.Div(className="panel", style={'marginTop': '2rem'}, children=[
+                html.Div(className="vault-controls", children=[
+                    html.H2([DashIconify(icon="mdi:folder-music", width=28, style={'marginRight':'10px'}), "Your Generated Files"], className="panel-title", style={'border': 'none', 'margin': '0', 'padding': '0'}),
+                    html.Button([DashIconify(icon="mdi:refresh", width=20), " Refresh"], id="btn-refresh-vault", style={'backgroundColor': '#334155', 'color': 'white', 'border': 'none', 'padding': '10px 20px', 'borderRadius': '8px', 'cursor': 'pointer', 'fontWeight': 'bold'})
                 ]),
                 html.Div(id="vault-gallery")
             ])
