@@ -6,12 +6,15 @@ services:
     ports:
       - "8001:8001"
     volumes:
-      # The left side is your server, the right side is the container
+      # 1. The HDD path for your generated audio files
       - /mnt/media/ai_beat_generator:/app/shared_outputs
+      
+      # 2. The SSD path for lightning-fast AI model loading
+      - /home/kratos/Dockers/ai_beat_builders/ai_cache:/root/.cache 
     deploy:
       resources:
         limits:
-          memory: 10G
+          memory: 12G
 
   composer_frontend:
     build: ./frontend
