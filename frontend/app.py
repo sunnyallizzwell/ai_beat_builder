@@ -49,11 +49,22 @@ app.layout = html.Div(className="studio-container", children=[
                             dcc.Input(id="ai-duration", type="number", value=10, min=5, max=30)
                         ])
                     ]),
+                        # NEW SINGLE CHECKBOX FOR CONTINUATION
+                    html.Div(style={'marginBottom': '20px', 'backgroundColor': '#0f172a', 'padding': '15px', 'borderRadius': '8px', 'border': '1px solid #334155'}, children=[
+                        dcc.Checklist(
+                            id="ai-extend-track",
+                            options=[
+                                {'label': ' DJ Mix Mode: Seamlessly extend to a full 3-minute song (Takes longer to generate)', 'value': 'extend'}
+                            ],
+                            value=[], # Empty list means it is UNCHECKED by default
+                            inputStyle={'marginRight': '12px', 'transform': 'scale(1.4)', 'accentColor': '#a855f7', 'cursor': 'pointer'},
+                            labelStyle={'cursor': 'pointer', 'fontWeight': 'bold', 'color': '#38bdf8', 'display': 'flex', 'alignItems': 'center'}
+                        )
+                    ]),
                     
                     html.Button([DashIconify(icon="mdi:creation", width=22), " Synthesize Audio (.WAV)"], id="btn-ai", className="btn-generate btn-ai", n_clicks=0),
                     dcc.Loading(type="circle", color="#a855f7", style={'marginTop': '40px'}, children=[html.Div(id="ai-output")])
                 ]),
-
                 # PANEL 2: MATH ENGINE
                 html.Div(className="panel", children=[
                     html.H2([DashIconify(icon="mdi:math-compass", width=28, style={'marginRight':'10px'}), "Algorithmic Grid Sequencer"], className="panel-title text-teal"),
@@ -137,19 +148,26 @@ def load_vault(n_clicks, tab):
     Input("btn-ai", "n_clicks"),
     State("ai-prompt", "value"),
     State("ai-duration", "value"),
+    State("ai-extend-track", "value"), # GET THE CHECKBOX STATE
     prevent_initial_call=True
 )
-def generate_ai(n_clicks, prompt, duration):
+def generate_ai(n_clicks, prompt, duration, extend_val):
     if not prompt: return html.Div("Please enter a prompt.", style={'color': '#ef4444', 'marginTop': '15px'})
+    
+    # If the checkbox is checked, 'extend' will be in the list
+    is_extended = 'extend' in extend_val
+    
     try:
-        res = requests.post(f"{BACKEND_URL}/api/ai/generate", json={"prompt": prompt, "duration": duration}, timeout=300)
+        # Pass the boolean to the backend. Timeout increased to 20 mins to allow for heavy Continuation processing!
+        res = requests.post(f"{BACKEND_URL}/api/ai/generate", json={"prompt": prompt, "duration": duration, "extend_track": is_extended}, timeout=1200)
         data = res.json()
         if data.get("status") == "success":
             filename = data.get("file")
-            return html.Div(className="success-box", children=[
-                html.Audio(src=f"/downloads/{filename}", controls=True),
+            return html.Div(className="success-box", style={'marginTop': '20px', 'padding': '15px', 'backgroundColor': '#1e293b', 'borderRadius': '8px'}, children=[
+                html.Div("✅ Track Synthesized Successfully!", style={'color': '#a855f7', 'fontWeight': 'bold', 'marginBottom': '10px'}),
+                html.Audio(src=f"/downloads/{filename}", controls=True, style={'width': '100%'}),
                 html.Br(),
-                html.A([DashIconify(icon="mdi:download"), f" Download {filename}"], href=f"/downloads/{filename}", className="download-link")
+                html.A([DashIconify(icon="mdi:download"), f" Download File"], href=f"/downloads/{filename}", style={'display': 'inline-block', 'marginTop': '10px', 'color': '#38bdf8', 'textDecoration': 'none', 'fontWeight': 'bold'})
             ])
         else:
             return html.Div(f"Error: {data.get('message')}", style={'color': '#ef4444', 'marginTop': '15px'})
