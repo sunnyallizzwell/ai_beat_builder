@@ -1,0 +1,29 @@
+services:
+  composer_backend:
+    build: ./backend
+    container_name: beat_backend
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    volumes:
+      # 1. The HDD path for your generated audio files
+      - /mnt/media/ai_beat_generator:/app/shared_outputs
+      
+      # 2. The SSD path for lightning-fast AI model loading
+      - /home/kratos/Dockers/ai_beat_builders/ai_cache:/root/.cache 
+    deploy:
+      resources:
+        limits:
+          memory: 12G
+
+  composer_frontend:
+    build: ./frontend
+    container_name: beat_frontend
+    restart: unless-stopped
+    ports:
+      - "8060:8050"
+    volumes:
+      # Make sure the frontend points to the exact same place!
+      - /mnt/media/ai_beat_generator:/app/shared_outputs
+    depends_on:
+      - composer_backend
