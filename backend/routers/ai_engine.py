@@ -29,7 +29,7 @@ def _generate_isolated(prompt: str, duration: int, extend_track: bool, filepath:
     import torch
     
     print(f"\n[SYSTEM] Clone spawned. Extend Track: {extend_track}. Loading model...")
-    model = MusicGen.get_pretrained('facebook/musicgen-small', device='cpu')
+    model = MusicGen.get_pretrained('facebook/musicgen-medium', device='cpu')
     
     model.set_generation_params(
         duration=duration,
