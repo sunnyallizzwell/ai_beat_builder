@@ -10,7 +10,7 @@ router = APIRouter()
 OUTPUT_DIR = '/app/shared_outputs'
 
 print("[SYSTEM] Loading MusicGen Model to CPU...")
-model = MusicGen.get_pretrained('facebook/musicgen-small', device='cpu')
+model = MusicGen.get_pretrained('facebook/musicgen-medium', device='cpu')
 print("[SYSTEM] MusicGen Ready.")
 
 class AIRequest(BaseModel):
@@ -30,14 +30,21 @@ def sanitize_filename(prompt: str) -> str:
 @router.post("/generate")
 def generate_ai_beat(req: AIRequest):
     try:
-        model.set_generation_params(duration=req.duration)
+        # QUALITY UPGRADES:
+        # cfg_coef: 5.0 forces the AI to strictly obey your prompt (less random noise)
+        # temperature: 0.85 reduces chaos and makes the beat more structured
+        model.set_generation_params(
+            duration=req.duration,
+            cfg_coef=5.0, 
+            temperature=0.85 
+        )
         wav = model.generate([req.prompt], progress=False)
         
-        # Use the sanitized prompt for the filename
         filename = sanitize_filename(req.prompt)
         filepath = os.path.join(OUTPUT_DIR, filename)
         
-        audio_write(filepath, wav[0].cpu(), model.sample_rate, strategy="loudness")
+        # QUALITY UPGRADE: Change strategy to "peak" to stop bass distortion/clipping
+        audio_write(filepath, wav[0].cpu(), model.sample_rate, strategy="peak")
         return {"status": "success", "file": f"{filename}.wav"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
